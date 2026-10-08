@@ -1,0 +1,62 @@
+# Settings for `sc-asr data-prep`. Paths are relative to the directory you run the command from.
+# Any key may be omitted; defaults live in src/sc_asr/data/config.py.
+
+# --- inputs / outputs -------------------------------------------------------
+transcripts_dir: sc_hearings/transcripts
+audio_dirs:
+  - sc_hearings/mp3            # files that are not real audio (e.g. saved HTML pages) are skipped and reported
+output_dir: data/prepared
+sample_rate: 16000
+hearings: []                   # empty = all; or a list of hearing keys, e.g. 296862017_2023-11-22
+
+# Split by case (hours of raw audio). Test and validation keep the subset's held-out cases
+# (296862017, 118052024) and contain none of the subset's training cases.
+case_splits:
+  "90121999": train            # 14.6 h, 3 hearings
+  "297962019": train           # 11.1 h, 3 hearings
+  "92872006": train            # 10.8 h, 2 hearings
+  "101772014": train           #  9.5 h, 2 hearings
+  "202342022": train           #  8.9 h, 2 hearings
+  "400992022": train           #  8.8 h, 2 hearings
+  "2024042484-3": train        #  5.8 h
+  "279352017": train           #  5.5 h
+  "479282023": train           #  1.3 h
+  "103822024": train           #  1.3 h  -> train 77.6 h (82 %)
+  "129962005": validation      #  5.6 h
+  "118052024": validation      #  0.2 h  -> validation 5.8 h (6 %)
+  "161132009": test            #  5.0 h
+  "255362010": test            #  5.3 h
+  "296862017": test            #  0.9 h, 2 hearings -> test 11.2 h (12 %)
+
+# --- stage 1: transcript cleaning --------------------------------------------
+line_numbers: trailing         # where the PDFs print line numbers: trailing | leading | none
+
+# --- stage 2: timing anchors (faster-whisper, Silero VAD enabled) -------------
+asr_model: medium.en           # small.en is much faster on CPU; large-v3 is most accurate on GPU
+device: cuda                   # cuda | cpu
+compute_type: null             # null = float16 on cuda, int8 on cpu
+beam_size: 5
+cpu_threads: 4                 # CPU threads for Whisper; leaves the rest of the machine responsive
+window_minutes: 20             # long hearings are transcribed in windows cut at silences (bounded memory)
+
+# --- stage 3: alignment, chunking, verification -------------------------------
+min_anchor_words: 3            # an exact-match run must be at least this long to be trusted
+min_pause: 0.15                # minimum gap between ASR words to consider a cut there
+snap_slack: 0.2                # seconds either side of the ASR gap to look for a VAD silence to cut in
+edge_pad: 0.15                 # max seconds of padding kept around a chunk
+min_seconds: 2.0
+target_seconds: 10.0
+max_seconds: 20.0
+max_mismatch_run: 4            # reject if this many words appear on one side only (skipped/added text)
+max_cer: 0.35                  # loose safety limit; ASR word errors are expected and allowed
+min_words_per_second: 0.8
+max_words_per_second: 5.5
+vad_check: true                # per-chunk Silero VAD check
+min_speech_ratio: 0.6
+edge_window: 0.08              # seconds at each chunk edge that must not be speech
+
+# --- stage 4: split + export ------------------------------------------------
+validation_fraction: 0.1       # fractions of kept audio; splits are made by case number
+test_fraction: 0.1
+seed: 13
+review_sample_size: 50

@@ -1,0 +1,30 @@
+# Low-compute subset for CPU runs: 6 hearings from 5 cases, ~4.1 h of audio.
+# Run:  sc-asr data-prep --config configs/data_prep_subset.yaml
+# Unlisted settings use the defaults in src/sc_asr/data/config.py (same values as data_prep.yaml).
+
+transcripts_dir: sc_hearings/transcripts
+audio_dirs:
+  - sc_hearings/mp3
+output_dir: data/subset
+
+hearings:
+  - 103822024_2024-03-11       # 77 min   train
+  - 479282023_2023-12-13       # 80 min   train
+  - 297962019_2023-07-11       # 23 min   train
+  - 118052024_2024-03-15       # 11 min   validation
+  - 296862017_2023-11-22       # 18 min   test
+  - 296862017_2024-04-16       # 34 min   test
+
+# Pinned so train gets ~3 h; the automatic split works poorly with only 5 cases.
+case_splits:
+  "103822024": train
+  "479282023": train
+  "297962019": train
+  "118052024": validation
+  "296862017": test
+
+# Lowest-compute settings for this PC
+asr_model: small.en            # timing model only (not fine-tuned); int8 on CPU
+device: cpu
+cpu_threads: 4
+window_minutes: 20

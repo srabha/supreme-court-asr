@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "supreme-court-asr"
+version = "0.1.0"
+description = "Data preparation, Whisper fine-tuning, and evaluation for Supreme Court hearing ASR"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24,<3",
+  "soundfile>=0.12",
+  "jiwer>=3.0,<5",
+  "torch>=2.1",
+  "transformers>=4.46,<5",
+  "peft>=0.13",
+  "accelerate>=1.0",
+]
+
+[project.optional-dependencies]
+data = [
+  "av>=12",
+  "pypdf>=4",
+  "num2words>=0.5.13",
+  "faster-whisper>=1.0",
+  "rapidfuzz>=3.0",
+  "pyyaml>=6",
+]
+dev = ["pytest>=8"]
+
+[project.scripts]
+sc-asr = "sc_asr.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+
+# Raw inputs and generated data (large; rebuilt by scripts/download_data.py and sc-asr data-prep)
+/sc_hearings/
+/data/
+failed_downloads.txt
+
+# Model weights and checkpoints
+/models/
+
+# Colab upload bundle (built by colab/make_bundle.py)
+*.zip
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Colab run (not part of this repo)
+colab/
+configs/colab_subset.yaml
