@@ -20,6 +20,29 @@ pip install -e ".[data,dev]"
 
 `scripts/download_data.py` downloads the MP3s and PDF transcripts listed in the assignment CSV into `sc_hearings/mp3/` and `sc_hearings/transcripts/`. Audio and transcripts are matched by name (`001_161132009_2023-12-12.mp3` ↔ `161132009_2023-12-12.pdf`).
 
+## Models and prepared data
+
+The trained adapters and the prepared datasets are on Google Drive, so results can be checked without re-running data prep or training:
+
+**[sc_asr_drive_upload.zip](https://drive.google.com/file/d/1Z3QWUw4EOCofhMtGG-ioW5M6h91UGW3w/view?usp=drive_link)** (78 MB)
+
+Unzip it in the repo root, so that `models/` and `data/` sit next to this README. The commands below then work as written. For example, this reproduces `results/whisper-tiny-subset-e5.json` in about a minute on CPU:
+
+```bash
+sc-asr evaluate --manifest data/subset/manifests/hf/test.jsonl --model models/whisper-tiny-subset-e5 \
+    --output results/whisper-tiny-subset-e5.json
+```
+
+| In the zip | Contents |
+| --- | --- |
+| `models/whisper-tiny-subset-e5/` | LoRA adapter for Whisper tiny, subset, 5 epochs (best = epoch 2): the latest reported model |
+| `models/whisper-tiny-subset/` | Same, 1 epoch |
+| `models/whisper-tiny-smoke/` | Smoke test, 1 epoch (pipeline check only) |
+| `data/subset/` | 6 hearings, 211 chunks (173 train / 7 validation / 31 test): chunk WAVs, HF and NeMo manifests, reports, kept and rejected segments with reasons, cleaned transcripts, anchor ASR and VAD output |
+| `data/smoke/` | 3 hearings, 42 chunks (20 / 15 / 7), same layout |
+
+Not included, because the code rebuilds them: the raw MP3s and PDFs (`scripts/download_data.py`), the full-length 16 kHz WAVs (data-prep stage 0), and intermediate training checkpoints.
+
 ## Usage
 
 ```bash
