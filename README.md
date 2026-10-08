@@ -48,7 +48,8 @@ On Windows, `scripts/run_subset_cpu.ps1` runs all four steps with these settings
 
 Each stage skips work that already exists, so an interrupted run can just be restarted. `--stage` / `--stop-stage` run a range, e.g. `--stage 3` to re-cut after changing thresholds. All settings are in `configs/data_prep.yaml`; `hearings:` limits a run to some hearings and `case_splits:` pins cases to a split.
 
-Outputs (under `output_dir`):
+Outputs (under `output_dir`, set in the config: `data/prepared` for the full set,
+`data/subset` for the subset; e.g. `data/subset/manifests/hf/train.jsonl`):
 
 - `manifests/hf/{train,validation,test}.jsonl` — `audio`, `text`, … ; read by `sc-asr train` / `evaluate`
 - `manifests/nemo/{train,validation,test}.json` — NeMo format (`audio_filepath`, `duration`, `text`, …), for Parakeet or other NeMo models
